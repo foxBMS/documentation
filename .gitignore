@@ -1,0 +1,3 @@
+# compiled python files
+*.pyc
+build

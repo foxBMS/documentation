@@ -176,7 +176,7 @@ Importing the Project
 #.  Click |ECLIPSENEXT|
 
 #.  Chose ``Select archive file:`` and use
-    ``path/to/foxbms-setup/tools/eclipse-project.zip``
+    ``path/to/foxbms-setup/tools/foxbms-eclipse-project.zip``
     This will list the |foxbms| projects.
 
     .. _setup-project-import-projects.png:

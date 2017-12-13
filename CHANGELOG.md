@@ -1,5 +1,8 @@
 # foxBMS Change Log
 
+## Release 1.0.0
+Renamed and updated documentation repository.
+
 
 ## Release 0.5.2
 

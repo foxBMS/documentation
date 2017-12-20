@@ -15,7 +15,18 @@ This sections shows different kind of actions related to the software.
 .. contents::
     :local:
 
+.. _faq_current_sensor:
 
+How to start |foxBMS| if no messages are sent by CAN?
+-----------------------------------------------------
+
+If no current sensor is connected to |foxBMS|, it will not start. This default behavior can be changed by setting the switch
+
+.. code-block:: C
+
+    #define CURRENT_SENSOR_PRESENT               TRUE
+
+to ``FALSE`` as explaned in :ref:`software_documentation_defines`.
 
 How to create a task and change its priority and period?
 --------------------------------------------------------

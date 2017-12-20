@@ -1,82 +1,82 @@
 .. include:: ../../macros.rst
 
-
-
-
 .. _getting_started_checking:
 
 ====================
 Checking-up |foxbms|
 ====================
 
-This section describes how to test the |BMS-Master| with one |BMS-Slave| connected. These tests shows if the hardware and software components are working correctly:
-
- - |BMS-Slave|
- 
-   - Hardware
-   - Software
-   
-     - LTC driver
-     - SPI driver
-
- - |BMS-Master|
-   
-   - Hardware
-   - Software
-
-     - operating system
-     - ``syscontrol`` and ``bmscontrol``
-     - |il| and contactors
-     - Non-volatile memory (NVRAM): BKPSRAM and EEPROM
-     - CAN, SPI
-     - diagnosis
+This section describes how to test the |BMS-Master| with one |BMS-Slave|
+connected. These tests show if the hardware and software components of the
+|BMS-Master| and |BMS-Slave| are working correctly:
 
 -----------------
 Required Hardware
 -----------------
 
- - |BMS-Master|
- - Supply cable
- - one |BMS-Slave| (and additional voltage divider for voltage simulation)
- - CAN-Bus to PC (e.g., PCAN USB)
- - Normally closed switch for opening the |il| (hereafter referred to as |eo|) 
- - 3 contactors with normally open feedback (hereafter referred to as |pmc|, |ppc|, |mmc|)
- - Debugger
+ - 1 * |BMS-Master| including a supply cable
+ - 1 * |BMS-Slave|
+ - 1 * Battery voltage simulation at the |BMS-Slave| (e.g., voltage divider)
+ - 1 * CAN-Bus to PC adapter
+ - 1 * Normally closed switch for opening the |il| (hereafter referred to as
+   |eo|)
+ - 3 * Contactors with normally open feedback (hereafter referred to as |pmc|,
+   |ppc|, |mmc|)
+ - 1 * Debugger (optinally but, recommended)
 
 
 Testing Without Debugger
 ------------------------
 
-It is also possible to get little information if the system is running correctly without variable checking on the debugger. When requesting the later described states to the BMS, the contactors opening and closing can be hear.
+It is also possible to get little information if the system is running
+correctly without variable checking on the debugger. When requesting the later
+described states to the BMS, the contactors opening and closing can be heard.
+
+Testing With Debugger
+---------------------
+
+This test procedure gives more detailed test information when a debugger is
+used. The following variables should be checked during the test:
+
+- ``os_timer``
+- ``sys_state``
+- ``bms_state``
+- ``ltc_cellvoltage``
+- ``cont_contactor_states``
+- ``ilck_interlock_state``
 
 -----------------
 Required Software
 -----------------
 
-- |foxbms| firmware for |MCU0|
-- |foxbms| firmware for |MCU1|
-- Debugger
-- CAN-Bus to PC
-- CAN message for |drive| and |stdby|
+- |foxbms| binaries for |MCU0| (`latest release on GitHub for primary <https://github.com/foxbms/mcu-primary>`_)
+- |foxbms| binaries for |MCU1| (`latest release on GitHub for secondary <https://github.com/foxbms/mcu-secondary>`_)
+- Debugger-Software
+- Software to send CAN messages from the PC on the CAN bus.
+- CAN message for |normal| and |stdby|
 
 --------------
 Test Procedure
 --------------
 
-The test procedure consists of two steps:
+The test procedure consists of three steps:
 
- #. preparing the hardware
- #. building the software from source
- #. requesting bms-states to |BMS-Master| and checking variable values on the debugger
+ #. Preparing the hardware
+ #. Building the software from source
+ #. Requesting bms-states to |BMS-Master| and checking variable values on the
+    debugger
 
-If no debugger is available, only a partially test if all parts of |foxbms| are running correctly can be performed. As mentioned above, it can be checked accoustically if the 
-contactors are opening and closing. This is marked in the `Test`_ with |hear| and a following explanation if needed.
+If no debugger is available, only a partially test if all parts of |foxbms| are
+running correctly can be performed. As mentioned above, it can be checked
+accoustically if the contactors are opening and closing. This is marked in the
+`Test`_ with |hear| and the corresponding explanation if needed.
 
 Hardware Setup
 --------------
 
-#. Use a voltage divider for voltage simulation at the |LTC| and connect it to the |BMS-Slave|.
-#. Connect the two daisy chain connectors from the |BMS-Slave| to the |BMS-Master|. A daisy chain of 2 |slaves| is simulated.
+#. Apply voltages to the |BMS-Slave| cell measurement inputs (e.g., voltage divider)
+#. Connect the daisy chain connector from the |BMS-Slave| to the
+   |BMS-Master|.
 #. Connect the |eo| to the |il| of the |BMS-Master|.
 #. Connect the following contactors to the |BMS-Master|:
 
@@ -84,114 +84,97 @@ Hardware Setup
    #. ``contactor 1`` the |ppc| in the positive current path
    #. ``contactor 2`` the |mmc| in the negative current path
 
-#. The debugger is connected from the PC to the JTAG-interface of |MCU0| of |BMS-Master|.
-#. Connect the CAN-interface
+#. Connect the CAN-interface to the PC
+#. The debugger is connected from the PC to the JTAG-interface of |MCU0| of
+   |BMS-Master| (optional).
 
 Software Setup
 --------------
 
-#. Build the |foxbms| binaries.
+#. Build the |foxbms| binaries for both, |MCU0| and |MCU1|.
 
 Test
 ----
 
-#. Power |foxbms|
-#. Flash |foxbms| |MCU0|
-#. Start PCAN-View
-#. Start |foxbms|
-#. |req_stdby|
+#. Power |BMS-Master|
+#. Flash |foxbms| |MCU0| binaries on |MCU0|
+#. Flash |foxbms| |MCU1| binaries on |MCU1|
+#. Start CAN-communication viewer (e.g., PCAN-View when using PCAN-USB)
+#. Restart |BMS-Master|
+#. Send CAN message for |req_stdby|
 #. Check on the debugger if the system timer is running; variable: ``os_timer``
 #. Check if |BMS-Slave| reads voltages; variable: ``ltc_cellvoltage``
 #. |req_stdby|
 
-   #. Check on the debugger if |il| is closed; |var_il| (cont_interlock_state.set = 1)
-   
-#. |req_drive|
+   #. Check on the debugger if |il| is closed (|var_il| with ``ilck_interlock_state.feedback=ILCK_SWITCH_ON``)
 
-   #. Check on the debugger if contactors are closed in the correct order; |var_co|
+#. |req_normal|
+
+   #. Check on the debugger if contactors are closed in the correct order (|var_co|)
 
       #. close |mmc|
       #. close |ppc|
       #. close |pmc|
       #. open |ppc|
 
-   |hear|: If this test is performed with no debugger, contactors should be heard clicking four times.
+   |hear|: If this test is performed with no debugger, contactors can be clicking four times.
 
-   #. Check contactor counter; |var_bkpsram_co|
 
 #. |req_stdby|
 
-   #. Check on the debugger if |il| is closed; |var_il|
-   #. Check on the debugger if contactors are opened in the correct order; |var_co|
-   
-      #. Open |pmc|
-      #. Open |mmc|
-      
-   |hear|: If this test is performed with no debugger, each contactor should be heard clicking one time (too fast to hear the two contactors clicking separately).
-   
-   #. Check contactor counter; |var_bkpsram_co|
-   
-#. |req_drive|
+   #. Check on the debugger if |il| is closed (|var_il|)
+   #. Check on the debugger if contactors are opened (|var_co|)
 
-   #. Check on the debugger if contactors are closed in the correct order; |var_co|
+   |hear|: If this test is performed with no debugger, each contactor can be heard clicking one time.
+
+
+#. |req_normal|
+
+   #. Check on the debugger if contactors are closed in the correct order (|var_co|)
 
       #. close |mmc|
       #. close |ppc|
       #. close |pmc|
       #. open |ppc|
 
-   |hear|: If this test is performed with no debugger, contactors should be heard clicking four times.
+   |hear|: If this test is performed with no debugger, contactors can be heard clicking four times.
 
-   #. Check contactor counter; |var_bkpsram_co|
-   
+
 #. Open |il| by pressing |eo|
 
-   #. Check on the debugger if |il| is opened; |var_il|
-   #. Check on the debugger if contactors are opened in the correct order; |var_co|
+   #. Check on the debugger if |il| is opened (|var_il|)
+   #. Check on the debugger if contactors are opened (|var_co|)
 
-      #. Open |pmc|
-      #. Open |mmc|
-   
-   |hear|: If this test is performed with no debugger, each contactor should be heard clicking one time (too fast to hear the two contactors clicking separately).
-   
-#. |req_drive|
+   |hear|: If this test is performed with no debugger, each contactor can be heard clicking one time.
 
-   #. BMS should switch to ``SYSCTRL_STATE_ERROR`` as the |il| is still open; |var_sysctrl_st|
-   
+#. |req_normal|
+
+   #. BMS should switch to ``bms_state.state=BMS_STATEMACH_ERROR`` as the |il| is still open (|var_bms_state|)
+
 #. Close |il| by releasing |eo|
 
-   #. Check on the debugger if |il| is still open; |var_il|
-   #. BMS has to stay in error state: |var_sysctrl_st| has to stay in ``SYSCTRL_STATE_ERROR``
+   #. Check on the debugger if |il| is still open (|var_il|)
+   #. BMS has to stay in error state (check |var_bms_state|)
 
 #. |req_stdby|
 
-   #. Check on the debugger if |il| is closed; |var_il|
-   #. Check on the debugger if contactors are still open; |var_co|
+   #. Check on the debugger if |il| is closed (|var_il|)
+   #. Check on the debugger if contactors are still open (|var_co|)
 
-#. |req_drive|
+#. |req_normal|
 
-   #. Check on the debugger if contactors are closed in the correct order; |var_co|
+   #. Check on the debugger if contactors are closed in the correct order (|var_co|)
 
       #. close |mmc|
       #. close |ppc|
       #. close |pmc|
       #. open |ppc|
 
-   |hear|: If this test is performed with no debugger, contactors should be heard clicking four times.
-
-   #. Check contactor counter; |var_bkpsram_co|
+   |hear|: If this test is performed with no debugger, contactors can be heard clicking four times.
 
 #. |req_stdby|
 
-   #. Check on the debugger if |il| is closed; |var_il|
-   #. Check on the debugger if contactors are still open; |var_co|
-
-#. Power |foxbms| off
-#. Power |foxbms|
-#. Break  on ``main()`` with debugger
-#. Distort contactor counter in SRAM; |var_bkpsram_co|
-#. Go on/release break point
-
-   #. Check the debugger if the contactor counter values get reloaded from EEPROM; |var_bkpsram_co|
+   #. Check on the debugger if |il| is closed (|var_il|)
+   #. Check on the debugger if contactors are still open (|var_co|)
 
 #. done

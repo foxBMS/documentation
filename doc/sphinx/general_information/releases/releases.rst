@@ -62,6 +62,7 @@ The CAN matrix was also completely redesigned to ensure that new CAN messages ca
 
 Changelog:
 
+- by default a current sensor must be connected, otherwise |foxBMS| will not start. Details on how to change this behavior can be found in :ref:`faq_current_sensor`.
 - completely restructured embedded software architecture for enhanced modularity and flexibility
 - optimized embedded software module structure for more comprehensive adaptions
 - added a common repository for common primary and secondary drivers

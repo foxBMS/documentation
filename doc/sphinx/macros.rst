@@ -62,21 +62,20 @@
 .. |pmc| replace:: ``plus main contactor``
 .. |ppc| replace:: ``plus precharge contactor``
 .. |mmc| replace:: ``minus main contactor``
-.. |hear| replace:: *(H)*
-.. |drive| replace:: Drive
+.. |hear| replace:: **(H)**
+.. |normal| replace:: Normal
 .. |stdby| replace:: Standby
 
 .. -----------------------------------------------
 .. Variable Name Macros
 .. -----------------------------------------------
-.. |var_il| replace:: variable: ``cont_interlock_state``
+.. |var_il| replace:: variable: ``ilck_interlock_state``
 .. |var_co| replace:: variable: ``cont_contactor_states``
-.. |var_bkpsram_co| replace:: variable: struct ``bkpsram_ch_1`` member: ``contactors_count``
-.. |var_sysctrl_st| replace:: variable ``sysctrl`` member: ``SYSCTRL_STATEMACH_e``
+.. |var_bms_state| replace:: variable ``bms_state``
 
 .. -----------------------------------------------
 .. State Machine Macros
 .. -----------------------------------------------
-.. |req_drive| replace:: Request `Drive`-state via CAN
+.. |req_normal| replace:: Request `Normal`-state via CAN
 .. |req_stdby| replace:: Request `Standby`-state via CAN
 .. -----------------------------------------------

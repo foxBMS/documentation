@@ -27,7 +27,7 @@ The switch
 
     #define CHECK_CAN_TIMING                     TRUE
 
-is set to ``TRUE`` by default. In this configuraiton, the ``BMS`` statemachine will go into an error state if no requests are made periodically per CAN with a period of 100ms. When the switch is set to ``FALSE``, the check is not made.
+is set to ``TRUE`` by default. In this configuration, the ``BMS`` statemachine will go into an error state if no requests are made periodically per CAN with a period of 100ms. When the switch is set to ``FALSE``, the check is not made.
 
 The switch
 

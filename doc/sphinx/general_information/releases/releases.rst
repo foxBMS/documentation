@@ -16,8 +16,8 @@ The first line is the most recent one, the last one the oldest one.
 +               +----------+-----------+-----------+--------------+-----------------+-------------+-----------------+            +
 |               | Primary  | Secondary | Common    | |BMS-Master| | |BMS-Interface| | |BMS-Slave| | |BMS-Extension| |            |
 +===============+==========+===========+===========+==============+=================+=============+=================+============+
-| 1.0.0         | 1.0.0    | 1.0.0     | 1.0.0     | 1.0.2        | 1.0.1           |   1.0.1 ;   | 1.0.2           | 1.0.0      |
-|               |          |           |           |              |                 |   2.0.3 ;   |                 |            |
+| 1.0.0         | 1.0.0    | 1.0.0     | 1.0.0 ;   | 1.0.2        | 1.0.1           |   1.0.1 ;   | 1.0.2           | 1.0.0      |
+|               |          |           | 1.0.1     |              |                 |   2.0.3 ;   |                 |            |
 |               |          |           |           |              |                 |   2.1.0     |                 |            |
 +---------------+----------+-----------+-----------+--------------+-----------------+-------------+-----------------+------------+
 | 0.5.2         | 0.5.2    | 0.5.2     |           | 1.0.2        | 1.0.1           |   1.0.1 ;   | 1.0.2           | 0.5.0      |
@@ -40,6 +40,20 @@ The first line is the most recent one, the last one the oldest one.
 +---------------+----------+-----------+-----------+--------------+-----------------+-------------+-----------------+------------+
 
 The following section summarizes the release notes for the different versions of the documentation.
+
+Release 1.0.1 mcu-common
+------------------------
+
+Release notes:
+
+The %PATH% to foxconda was wrong for the clean command in eclipse for the primary project.
+The state of the interlock was correctly returned to the calling function, but not written back into the interlock state variable
+
+Changelog:
+
+- mcu-common repository: mcu-common\src\module\interlock.c: fixed the above mentioned bug
+- tools repository: tools\eclipse\foxbmsfoxbms-eclipse-project.zip: fixed the above mentioned bug
+
 
 Release 1.0.0
 -------------

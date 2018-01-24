@@ -501,9 +501,9 @@ like ``{ 0x123, 8, 100, 20, NULL_PTR }``
    - Data Length Code (i.e., number of bytes), usually 8
    - Transmit period in ms: must be multiple of ``CANS_TICK_MS``
    - Delay in ms for sending the message the first time: must be multiple of ``CANS_TICK_MS``
-   - A function pointer to be called after transmission, usually NULL_PTR to do nothing
+   - A function pointer to be called after transmission, ``NULL_PTR`` if nothing needs to be done
    
-3.2 If a RX message shall be configured - add the message for CAN0 or CAN1 in the respective array (CAN_MSG_RX_TYPE_s can0_RxMsgs[]). The message looks like ``{ 0x123, 0xFFFF, 8, 0, CAN_FIFO0, NULL }``
+3.2 If a RX message needs to be configured, the message for CAN0 or CAN1 must be added in the respective array (CAN_MSG_RX_TYPE_s can0_RxMsgs[]). The message looks like ``{ 0x123, 0xFFFF, 8, 0, CAN_FIFO0, NULL }``
 
     The parameters are:
     
@@ -536,6 +536,201 @@ File: ``module/config/cansignal_cfg.c``
    - Callback function gor getter (when CAN msg is transmitted) (``NULL_PTR`` if no function needed, e.g., for receive only) 
  
 5. The callback functions must be declared and implemented in ``cansignal_cfg.c``.
+
+
+.. _faq_can_lessthan12cells:
+
+How to adapt the CAN module when less than 12 battery cells/temperature sensors per module are used?
+----------------------------------------------------------------------------------------------------
+
+Five adaptions are necessary when removing unused battery cell voltages or temperatures This procedure is executed exemplarily 
+for 9 cell voltages and 5 temperature sensors:
+
+1. Adapt struct ``const CAN_MSG_TX_TYPE_s can_CAN0_messages_tx[]`` in file ``module/config/can_cfg.c``:
+
+.. code-block:: C
+
+    { 0x200, 8, 200, 20, NULL_PTR },  //!< Cell voltages module 0 cells 0 1 2
+    { 0x201, 8, 200, 20, NULL_PTR },  //!< Cell voltages module 0 cells 3 4 5
+    { 0x202, 8, 200, 20, NULL_PTR },  //!< Cell voltages module 0 cells 6 7 8
+    { 0x203, 8, 200, 20, NULL_PTR },  //!< Cell voltages module 0 cells 9 10 11
+   
+    { 0x210, 8, 200, 30, NULL_PTR },  //!< Cell temperatures module 0 cells 0 1 2
+    { 0x211, 8, 200, 30, NULL_PTR },  //!< Cell temperatures module 0 cells 3 4 5
+    { 0x212, 8, 200, 30, NULL_PTR },  //!< Cell temperatures module 0 cells 6 7 8
+    { 0x213, 8, 200, 30, NULL_PTR },  //!< Cell temperatures module 0 cells 9 10 11
+    
+Remove all unused CAN message depending on the number of used cells/sensors. In the example case remove cell voltage message 0x203 
+because we transmit only cell voltages 0-8. Additionally remove cell temperature message 0x212 and 0x213 because we only use 
+temperatures 0-4. Repeat this process for all modules.
+
+2. Adapt enum ``CANS_messagesTx_e`` in file ``module/config/cansignal_cfg.h``:
+
+.. code-block:: C
+
+    CAN0_MSG_Mod0_Cellvolt_0,  //!< Module 0 Cell voltages 0-2
+    CAN0_MSG_Mod0_Cellvolt_1,  //!< Module 0 Cell voltages 3-5
+    CAN0_MSG_Mod0_Cellvolt_2,  //!< Module 0 Cell voltages 6-8
+    CAN0_MSG_Mod0_Cellvolt_3,  //!< Module 0 Cell voltages 9-11
+    
+    CAN0_MSG_Mod0_Celltemp_0,  //!< Module 0 Cell temperatures 0-2
+    CAN0_MSG_Mod0_Celltemp_1,  //!< Module 0 Cell temperatures 3-5
+    CAN0_MSG_Mod0_Celltemp_2,  //!< Module 0 Cell temperatures 6-8
+    CAN0_MSG_Mod0_Celltemp_3,  //!< Module 0 Cell temperatures 9-11
+
+    
+Remove all unused enmus depending on the number of used cells/sensors. In the example case remove enum ``CAN0_MSG_Mod0_Cellvolt_3`` 
+because we transmit only cell voltages 0-8. Additionally remove cell temperature enum ``CAN0_MSG_Mod0_Celltemp_2`` and 
+``CAN0_MSG_Mod0_Celltemp_3`` because we only use temperatures 0-4. Repeat this process for all modules.
+
+3. Adapt enum ``CANS_CAN0_signalsTx_e`` in file ``module/config/cansignal_cfg.h``:
+
+.. code-block:: C
+
+    CAN0_SIG_Mod0_volt_valid_0_2,
+    CAN0_SIG_Mod0_volt_0,
+    CAN0_SIG_Mod0_volt_1,
+    CAN0_SIG_Mod0_volt_2,
+    CAN0_SIG_Mod0_volt_valid_3_5,
+    CAN0_SIG_Mod0_volt_3,
+    CAN0_SIG_Mod0_volt_4,
+    CAN0_SIG_Mod0_volt_5,
+    CAN0_SIG_Mod0_volt_valid_6_8,
+    CAN0_SIG_Mod0_volt_6,
+    CAN0_SIG_Mod0_volt_7,
+    CAN0_SIG_Mod0_volt_8,
+    CAN0_SIG_Mod0_volt_valid_9_11,
+    CAN0_SIG_Mod0_volt_9,
+    CAN0_SIG_Mod0_volt_10,
+    CAN0_SIG_Mod0_volt_11,
+
+    CAN0_SIG_Mod0_temp_valid_0_2,
+    CAN0_SIG_Mod0_temp_0,
+    CAN0_SIG_Mod0_temp_1,
+    CAN0_SIG_Mod0_temp_2,
+    CAN0_SIG_Mod0_temp_valid_3_5,
+    CAN0_SIG_Mod0_temp_3,
+    CAN0_SIG_Mod0_temp_4,
+    CAN0_SIG_Mod0_temp_5,
+    CAN0_SIG_Mod0_temp_valid_6_8,
+    CAN0_SIG_Mod0_temp_6,
+    CAN0_SIG_Mod0_temp_7,
+    CAN0_SIG_Mod0_temp_8,
+    CAN0_SIG_Mod0_temp_valid_9_11,
+    CAN0_SIG_Mod0_temp_9,
+    CAN0_SIG_Mod0_temp_10,
+    CAN0_SIG_Mod0_temp_11,
+    
+Remove all unused enmus depending on the number of used cells/sensors. In the example case remove enums ``CAN0_SIG_Mod0_volt_valid_9_11`` 
+to ``CAN0_SIG_Mod0_volt_11`` because we transmit only cell voltages 0-8. Additionally remove cell temperature enums ``CAN0_SIG_Mod0_temp_5`` 
+to CAN0_SIG_Mod0_temp_11 because we only use temperatures 0-4. Repeat this process for all modules.
+
+4. Adapt struct ``const CANS_signal_s cans_CAN0_signals_tx[]`` in file ``module/config/cansignal_cfg.c``:
+
+.. code-block:: C
+
+        // Module 0 cell voltages
+        { {CAN0_MSG_Mod0_Cellvolt_0}, 0, 8, 0, 0xFF, 1, 0, NULL_PTR, &cans_getvolt },  //!< CAN0_SIG_Mod0_volt_valid_0_2
+        { {CAN0_MSG_Mod0_Cellvolt_0}, 8, 16, 0, 0xFFFF, 1, 0, NULL_PTR, &cans_getvolt },  //!< CAN0_SIG_Mod0_volt_0
+        { {CAN0_MSG_Mod0_Cellvolt_0}, 24, 16, 0, 0xFFFF, 1, 0, NULL_PTR, &cans_getvolt },  //!< CAN0_SIG_Mod0_volt_1
+        { {CAN0_MSG_Mod0_Cellvolt_0}, 40, 16, 0, 0xFFFF, 1, 0, NULL_PTR, &cans_getvolt },  //!< CAN0_SIG_Mod0_volt_2
+        { {CAN0_MSG_Mod0_Cellvolt_1}, 0, 8, 0, 0xFF, 1, 0, NULL_PTR, &cans_getvolt },  //!< CAN0_SIG_Mod0_volt_valid_3_5
+        { {CAN0_MSG_Mod0_Cellvolt_1}, 8, 16, 0, 0xFFFF, 1, 0, NULL_PTR, &cans_getvolt },  //!< CAN0_SIG_Mod0_volt_3
+        { {CAN0_MSG_Mod0_Cellvolt_1}, 24, 16, 0, 0xFFFF, 1, 0, NULL_PTR, &cans_getvolt },  //!< CAN0_SIG_Mod0_volt_4
+        { {CAN0_MSG_Mod0_Cellvolt_1}, 40, 16, 0, 0xFFFF, 1, 0, NULL_PTR, &cans_getvolt },  //!< CAN0_SIG_Mod0_volt_5
+        { {CAN0_MSG_Mod0_Cellvolt_2}, 0, 8, 0, 0xFF, 1, 0, NULL_PTR, &cans_getvolt },  //!< CAN0_SIG_Mod0_volt_valid_6_8
+        { {CAN0_MSG_Mod0_Cellvolt_2}, 8, 16, 0, 0xFFFF, 1, 0, NULL_PTR, &cans_getvolt },  //!< CAN0_SIG_Mod0_volt_6
+        { {CAN0_MSG_Mod0_Cellvolt_2}, 24, 16, 0, 0xFFFF, 1, 0, NULL_PTR, &cans_getvolt },  //!< CAN0_SIG_Mod0_volt_7
+        { {CAN0_MSG_Mod0_Cellvolt_2}, 40, 16, 0, 0xFFFF, 1, 0, NULL_PTR, &cans_getvolt },  //!< CAN0_SIG_Mod0_volt_8
+        { {CAN0_MSG_Mod0_Cellvolt_3}, 0, 8, 0, 0xFF, 1, 0, NULL_PTR, &cans_getvolt },  //!< CAN0_SIG_Mod0_volt_valid_9_11
+        { {CAN0_MSG_Mod0_Cellvolt_3}, 8, 16, 0, 0xFFFF, 1, 0, NULL_PTR, &cans_getvolt },  //!< CAN0_SIG_Mod0_volt_9
+        { {CAN0_MSG_Mod0_Cellvolt_3}, 24, 16, 0, 0xFFFF, 1, 0, NULL_PTR, &cans_getvolt },  //!< CAN0_SIG_Mod0_volt_10
+        { {CAN0_MSG_Mod0_Cellvolt_3}, 40, 16, 0, 0xFFFF, 1, 0, NULL_PTR, &cans_getvolt },  //!< CAN0_SIG_Mod0_volt_11
+
+        // Module 0 cell temperatures
+        { {CAN0_MSG_Mod0_Celltemp_0}, 0, 8, 0, 0xFF, 1, 0, NULL_PTR, &cans_gettemp },  //!< CAN0_SIG_Mod0_volt_valid_0_2
+        { {CAN0_MSG_Mod0_Celltemp_0}, 8, 16, -128, 527.35, 100, 128, NULL_PTR, &cans_gettemp },  //!< CAN0_SIG_Mod0_temp_0
+        { {CAN0_MSG_Mod0_Celltemp_0}, 24, 16, -128, 527.35, 100, 128, NULL_PTR, &cans_gettemp },  //!< CAN0_SIG_Mod0_temp_1
+        { {CAN0_MSG_Mod0_Celltemp_0}, 40, 16, -128, 527.35, 100, 128, NULL_PTR, &cans_gettemp },  //!< CAN0_SIG_Mod0_temp_2
+        { {CAN0_MSG_Mod0_Celltemp_1}, 0, 8, 0, 0xFF, 1, 0, NULL_PTR, &cans_gettemp },  //!< CAN0_SIG_Mod0_volt_valid_3_5
+        { {CAN0_MSG_Mod0_Celltemp_1}, 8, 16, -128, 527.35, 100, 128, NULL_PTR, &cans_gettemp },  //!< CAN0_SIG_Mod0_temp_3
+        { {CAN0_MSG_Mod0_Celltemp_1}, 24, 16, -128, 527.35, 100, 128, NULL_PTR, &cans_gettemp },  //!< CAN0_SIG_Mod0_temp_4
+        { {CAN0_MSG_Mod0_Celltemp_1}, 40, 16, -128, 527.35, 100, 128, NULL_PTR, &cans_gettemp },  //!< CAN0_SIG_Mod0_temp_5
+        { {CAN0_MSG_Mod0_Celltemp_2}, 0, 8, 0, 0xFF, 1, 0, &cans_gettemp },  //!< CAN0_SIG_Mod0_volt_valid_6_8
+        { {CAN0_MSG_Mod0_Celltemp_2}, 8, 16, -128, 527.35, 100, 128, NULL_PTR, &cans_gettemp },  //!< CAN0_SIG_Mod0_temp_6
+        { {CAN0_MSG_Mod0_Celltemp_2}, 24, 16, -128, 527.35, 100, 128, NULL_PTR, &cans_gettemp },  //!< CAN0_SIG_Mod0_temp_7
+        { {CAN0_MSG_Mod0_Celltemp_2}, 40, 16, -128, 527.35, 100, 128, NULL_PTR, &cans_gettemp },  //!< CAN0_SIG_Mod0_temp_8
+        { {CAN0_MSG_Mod0_Celltemp_3}, 0, 8, 0, 0xFF, 1, 0, NULL_PTR, &cans_gettemp },  //!< CAN0_SIG_Mod0_volt_valid_9_11
+        { {CAN0_MSG_Mod0_Celltemp_3}, 8, 16, -128, 527.35, 100, 128, NULL_PTR, &cans_gettemp },  //!< CAN0_SIG_Mod0_temp_9
+        { {CAN0_MSG_Mod0_Celltemp_3}, 24, 16, -128, 527.35, 100, 128, NULL_PTR, &cans_gettemp },  //!< CAN0_SIG_Mod0_temp_10
+        { {CAN0_MSG_Mod0_Celltemp_3}, 40, 16, -128, 527.35, 100, 128, NULL_PTR, &cans_gettemp },  //!< CAN0_SIG_Mod0_temp_11
+        
+Remove all unused struct entries depending on the number of used cells/sensors. Repeat this process for all modules.
+
+5. Adapt functions ``cans_getvolt`` and ``cans_gettemp`` in file ``module/config/cansignal_cfg.c``:
+
+Remove all case-statements for which the signals have been deleted in the previous steps. 
+
+.. _faq_can_lessthan8modules:
+
+How to adapt the CAN module when less or more than 8 battery modules are used?
+------------------------------------------------------------------------------
+
+When less than 8 modules are used, the same procedure as described in :ref:`faq_can_lessthan8modules` must be used but only the unused 
+modules instead of unused cell voltages/temperatures must be deleted. If additional modules should be added also follow these instructions 
+but instead of deleting these signals and CAN messages add the wished number of new messages. 
+
+
+Morover an adaption of the functions  ``cans_getvolt`` and ``cans_gettemp`` in file ``module/config/cansignal_cfg.c`` is necessary:
+
+.. code-block:: C
+
+    // Determine module and cell number
+    if (sigIdx - CAN0_SIG_Mod0_volt_valid_0_2 < CANS_MODULSIGNALS_VOLT) {
+        modIdx = 0;
+        cellIdx = sigIdx - CAN0_SIG_Mod0_volt_valid_0_2;
+    } else if (sigIdx - CAN0_SIG_Mod1_volt_valid_0_2 < CANS_MODULSIGNALS_VOLT) {
+        modIdx = 1;
+        cellIdx = sigIdx - CAN0_SIG_Mod1_volt_valid_0_2;
+    } else if (sigIdx - CAN0_SIG_Mod2_volt_valid_0_2 < CANS_MODULSIGNALS_VOLT) {
+        modIdx = 2;
+        cellIdx = sigIdx - CAN0_SIG_Mod2_volt_valid_0_2;
+    } else if (sigIdx - CAN0_SIG_Mod3_volt_valid_0_2 < CANS_MODULSIGNALS_VOLT) {
+        modIdx = 3;
+        cellIdx = sigIdx - CAN0_SIG_Mod3_volt_valid_0_2;
+    } else if (sigIdx - CAN0_SIG_Mod4_volt_valid_0_2 < CANS_MODULSIGNALS_VOLT) {
+        modIdx = 4;
+        cellIdx = sigIdx - CAN0_SIG_Mod4_volt_valid_0_2;
+    } else if (sigIdx - CAN0_SIG_Mod5_volt_valid_0_2 < CANS_MODULSIGNALS_VOLT) {
+        modIdx = 5;
+        cellIdx = sigIdx - CAN0_SIG_Mod5_volt_valid_0_2;
+    } else if (sigIdx - CAN0_SIG_Mod6_volt_valid_0_2 < CANS_MODULSIGNALS_VOLT) {
+        modIdx = 6;
+        cellIdx = sigIdx - CAN0_SIG_Mod6_volt_valid_0_2;
+    } else if (sigIdx - CAN0_SIG_Mod7_volt_valid_0_2 < CANS_MODULSIGNALS_VOLT) {
+        modIdx = 7;
+        cellIdx = sigIdx - CAN0_SIG_Mod7_volt_valid_0_2;
+    }
+
+This if statement performs a module detection to allocate the correct cell voltage to the respective CAN message. This statement 
+needs to be shortened/extended depending on the number of used modules. The same method is used to allocate the cell temperatures
+and thus needs to be adapted as well.
+
+.. note::
+
+    The define CANS_MODULSIGNALS_TEMP is calculated as followed:
+    
+    .. code-block:: C
+    
+        #define CANS_MODULSIGNALS_TEMP  (CAN0_SIG_Mod1_volt_valid_0_2 - CAN0_SIG_Mod0_temp_valid_0_2)
+        
+    When only one module is used this define needs to be redefined on the next signal used after the last temperature signal of 
+    module 0. If no signal is defined after the module 0 temperature signals use the last defined temperature signal. For the 
+    default configuration of foxBMS this could look like this:
+
+    .. code-block:: C
+   
+        #define CANS_MODULSIGNALS_TEMP  ((CAN0_SIG_Mod0_temp_11 - CAN0_SIG_Mod0_temp_valid_0_2) + 1)
 
 
 How to change the blink period of the indicator LEDs?
@@ -658,6 +853,50 @@ How to set the initial SOC value via CAN?
 -----------------------------------------
 
 This is done via the debug message with the first byte (byte0) equal to 11 (0x0B). The SOC is defined via the next two bytes (i.e., on 16bit: byte1 byte2). The SOC is given in 0.01% unit, which means that the 16bit number should be comprised between 0 and 10000. If a smaller value is given, the SOC will be set to 0%. If a greater value is given, SOC will be set to 100%.
+
+.. _faq_voltage_input_configuration:
+
+How to configure the voltage inputs?
+------------------------------------
+
+This number is changed in ``batterysystem_cfg.h`` with the define ``BS_NR_OF_BAT_CELLS_PER_MODULE``. In addition, the variable
+
+.. code-block:: C
+
+    const uint8_t ltc_voltage_input_used[BS_MAX_SUPPORTED_CELLS]
+
+must be adapted, too, in ``ltc_cfg.c``.
+
+It has the size of ``BS_MAX_SUPPORTED_CELLS``. If a cell voltage is connected to the LTC IC input, ``1`` must be written in the table. Otherwise, ``0`` must be written.
+
+For instance, if 5 cells are connected to inputs ``0``, ``2``, ``5``, ``7``, ``11``,
+
+.. code-block:: C
+
+    #define BS_NR_OF_BAT_CELLS_PER_MODULE               5
+    
+must be used and 
+
+.. code-block:: C
+
+    const uint8_t ltc_voltage_input_used[BS_MAX_SUPPORTED_CELLS] = {
+        1 ,
+        0 ,
+        1 ,
+        0 ,
+        0 ,
+        1 ,
+        0 ,
+        1 ,
+        0 ,
+        0 ,
+        0 ,
+        1 ,
+    };
+
+must be defined. The number of ``1`` in the table must be equal to ``BS_NR_OF_BAT_CELLS_PER_MODULE``.
+
+.. _faq_temperature_sensor_configuration:
 
 How to add/remove temperature sensors?
 --------------------------------------

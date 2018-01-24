@@ -49,6 +49,7 @@
 .. |mod_isoguard| replace:: ``isoguard`` module
 .. |mod_bal| replace:: ``balancing`` module
 .. |mod_diag| replace:: ``diag`` module
+.. |mod_meas| replace:: ``measurement`` module
 .. |mod_database| replace:: ``database`` module
 .. |mod_bender| replace:: ``bender`` module
 .. |mod_nvm| replace:: ``nvm`` module

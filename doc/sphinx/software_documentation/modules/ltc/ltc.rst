@@ -91,7 +91,7 @@ Possible state requests
 Folowing actions can be requested:
 
  - write to IO port-expander
- - read to IO port-expander
+ - read from IO port-expander
  - read external temperature sensor on slave
  - read global balancing feedback
  - read from external slave EEPROM
@@ -115,7 +115,7 @@ Before writing to the EEPROM, the address must be written to ``eeprom_write_addr
 Measurement frequency
 ---------------------
 
-When no requests are made, with 8 modules and 12 cell voltages, in normal measurement mode, a measurement cycle takes no more than 20ms. As a consequence, a measurement frequency of 50Hz can be achieved for the voltages.
+When no requests are made, with 8 |LTC| monitoring ICs in the daisy-chain and 12 cell voltages, in normal measurement mode, a measurement cycle takes no more than 20ms. As a consequence, a measurement frequency of 50Hz can be achieved for the voltages.
 
 If requests are made, the measurement cycle can last longer (e.g., access to the EEPROM on the slaves needs more time). 
 
@@ -172,7 +172,7 @@ where the multiplexer to select (muxID, can be 0, 1, 2 or 3) and the channel to 
 Temperature Sensor Assignment
 -----------------------------
 
-For temperature sensors, the variable is used to give the correspondence between the channel measured and the index used:
+For temperature sensors, the following variable is used to give the correspondence between the channel measured and the index used:
 
 .. code-block:: C
 
@@ -193,7 +193,7 @@ In the above example, channel 0 of the multiplexer corresponds to temperature se
 
    sensor_idx = ltc_muxsensortemperaturmain_cfg[muxseqptr->muxCh];
 
-More detailed information on the configueration of the temperature sensors can be found in the software FAQ: :ref:`faq_temperature_sensor_configuration`.
+Further information on the configuration of the temperature sensors can be found in the software FAQ: :ref:`faq_temperature_sensor_configuration`.
 
 References
 ~~~~~~~~~~

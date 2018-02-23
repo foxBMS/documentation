@@ -831,9 +831,9 @@ The following change must be made to configure a contactor without feedback. In 
 
 .. code-block:: C
 
-   {CONT_PLUS_PRECHARGE_CONTROL,   CONT_HAS_NO_FEEDBACK,   CONT_FEEDBACK_TYPE_DONT_CARE}
+   {CONT_PLUS_PRECHARGE_CONTROL,   CONT_PLUS_PRECHARGE_FEEDBACK,   CONT_HAS_NO_FEEDBACK}
 
-With this configuration, the feedback value will always be equal to the expected value for the precharge contactor. This configuration should not be used without precautions since the safety level will be reduced.
+With this configuration, the feedback pin (``CONT_PLUS_PRECHARGE_FEEDBACK``) is ignored and the feedback value will always be equal to the expected value for the precharge contactor. This configuration should not be used without precautions since the safety level will be reduced.
 
 .. _can_debug_message:
 
@@ -846,8 +846,15 @@ The CAN message with ID 0x100 is considered as a `debug message`. If received, t
 How to start/stop balancing the battery cells?
 ----------------------------------------------
 
-Currently, this is done by sending the debug message with the first byte (byte0) equal to 14 (0x0E). If the second byte is set to 1, balancing will start. If set to 0, balancing stops. The third byte corresponds to the threshold for balancing. The minimum voltage is determined at pack level, and every cell whose voltage is greater than minimum+threshold is balanced.
+When the ``#define BALANCING_DEFAULT_INACTIVE`` is set to ``FALSE``, |foxBMS| starts the balancing process automatically if the balancing requirements are met. The balancing behavior is described in details in the documentation of the :ref:`BALANCING` module.
 
+This behavior can be influenced via a debug message sent per CAN (:ref:`can_debug_message`).
+
+When the data ``0E 01 00 00 00 00 00 00`` is sent, the balancing state machine goes to the ``BAL_STATEMACH_INACTIVE_OVERRIDE`` state. No balancing takes place.
+
+When the data ``0E 03 00 00 00 00 00 00`` is sent, the balancing state machine goes to the ``BAL_STATEMACH_ACTIVE_OVERRIDE`` state. Balancing takes place without taking into account the state of the |mod_bms|, the current flowing through the battery and the minimum cell voltage in the battery pack.
+
+When the data ``0E 02 00 00 00 00 00 00`` is sent, the balancing state machine goes out of the override state. Balancing takes place taking into account the state of the |mod_bms|, the current flowing through the battery and the minimum cell voltage in the battery pack. 
 
 How to set the initial SOC value via CAN?
 -----------------------------------------

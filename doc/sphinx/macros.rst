@@ -3,7 +3,7 @@
 .. -----------------------------------------------
 .. General Documentation Macros
 .. -----------------------------------------------
-.. |version| replace:: ``1.0.0``
+.. |version| replace:: ``1.0.2``
 .. |timestamp| date:: %Y-%m-%d %H:%M:%S
 .. |foxbms| replace:: foxBMS
 .. |foxconda| replace:: foxConda
@@ -49,6 +49,7 @@
 .. |mod_isoguard| replace:: ``isoguard`` module
 .. |mod_bal| replace:: ``balancing`` module
 .. |mod_diag| replace:: ``diag`` module
+.. |mod_meas| replace:: ``measurement`` module
 .. |mod_database| replace:: ``database`` module
 .. |mod_bender| replace:: ``bender`` module
 .. |mod_nvm| replace:: ``nvm`` module

@@ -19,6 +19,16 @@ The table :ref:`CANSgnls` gives the CAN signals sent and received in these messa
 
 To add or change a signal it must be refered to the software FAQ: :ref:`faq_can_manually_add`.
 
+.. note::
+
+    12 cell voltages, 12 cell temperatures and 8 modules are configured in the default CAN configuration of the |foxbms| Software.
+    
+If less then 8  modules, 12 cell voltages or 12 cell temperatures are configured in the software (e.g., in ``batterysystem_cfg.h``),
+random values are transmitted on these messages/signals. These values from the unused CAN messages must simply be ignored.
+
+In case it is really wanted not to transmit these values, the configuration of the CAN module must be changed as shown in the software FAQ in
+:ref:`faq_can_lessthan8modules` and in :ref:`faq_can_lessthan12cells`. The configuration must also be changed if more than 8 modules,
+12 cell voltages or 12 cell temperatures are used. 
 
 .. _CANMsgs:
 
@@ -234,13 +244,6 @@ Message names in the DBC file can vary from the following tables in order to be 
 +-----------------------------+----------------+---------+---------------+----------------------------------------+
 | CAN0_MSG_ISENS_TRIG         | 0x35B          | 8       | TX            | Trigger for CurrentSensor              |
 +-----------------------------+----------------+---------+---------------+----------------------------------------+
-
-Twelve cell voltages and cell temperatures of eight modules are transmitted in the default configuration of the |foxbms|-Software. If less 
-then eight modules, 12 cell voltages or 12 cell temperatures are configured in the software the unused CAN messages should be deleted from 
-the software because otherwise random invalid values are transmitted on these messages/signals. See FAQ section on how to manually add/delete 
-a CAN entry. 
-
-
 
 .. _CANSgnls:
 

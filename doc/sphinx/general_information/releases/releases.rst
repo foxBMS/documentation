@@ -16,9 +16,9 @@ The first line is the most recent one, the last one the oldest one.
 +               +----------+-----------+-----------+--------------+-----------------+-------------+-----------------+            +
 |               | Primary  | Secondary | Common    | |BMS-Master| | |BMS-Interface| | |BMS-Slave| | |BMS-Extension| |            |
 +===============+==========+===========+===========+==============+=================+=============+=================+============+
-| 1.0.0         | 1.0.0    | 1.0.0     | 1.0.0     | 1.0.2        | 1.0.1           |   1.0.1 ;   | 1.0.2           | 1.0.0      |
-|               |          |           |           |              |                 |   2.0.3 ;   |                 |            |
-|               |          |           |           |              |                 |   2.1.0     |                 |            |
+| 1.0.2         | 1.0.0 ;  | 1.0.0 ;   | 1.0.0 ;   | 1.0.2        | 1.0.1           |   1.0.1 ;   | 1.0.2           | 1.0.0      |
+|               | 1.0.1    | 1.0.1     | 1.0.1 ;   |              |                 |   2.0.3 ;   |                 |            |
+|               |          |           | 1.0.2     |              |                 |   2.1.0     |                 |            |
 +---------------+----------+-----------+-----------+--------------+-----------------+-------------+-----------------+------------+
 | 0.5.2         | 0.5.2    | 0.5.2     |           | 1.0.2        | 1.0.1           |   1.0.1 ;   | 1.0.2           | 0.5.0      |
 |               |          |           |           |              |                 |   2.0.3 ;   |                 |            |
@@ -40,6 +40,45 @@ The first line is the most recent one, the last one the oldest one.
 +---------------+----------+-----------+-----------+--------------+-----------------+-------------+-----------------+------------+
 
 The following section summarizes the release notes for the different versions of the documentation.
+
+Release 1.0.2 mcu-common
+------------------------
+
+Version 1.0.2 of mcu-common must be used with version 1.0.1 of mcu-primary and mcu-secondary.
+
+Release notes:
+
+The LTC driver was rewritten and now uses interrupts in addition to timings. With 8 modules or less, voltages are measured with a period not higher than 20ms,
+which means voltages can be measured with a 50Hz frequency.
+
+The LTC measurement cycle is not triggered from the |mod_meas| anymore, measuring is done automatically.
+
+Write and read access to the external EEPROM on the slaves was implemented.
+
+The function ``LTC_SetMUXChCommand()`` was corrected. In some cases, it did not switch the multiplexer inputs correctly.
+
+There was an error in the LTC and CANSIGNAL module when less than 12 battery cells per module were used.  This lead to incorrect transmitted cell voltages on the CAN bus. This error was corrected.
+
+Changelog:
+
+- mcu-common/src/module/ltc.c: fixed function LTC_SetMUXChCommand()
+- mcu-common/src/module/ltc.c: redesigned structure for automatic measurement and 50Hz voltage measurement
+- mcu-common/src/module/ltc.c: LTC driver now uses interrupts
+- mcu-common/src/module/ltc.c: implemented/improved access to slave features (IO port-expander, external temperature sensor, EEPROM)
+
+Release 1.0.1 mcu-common
+------------------------
+
+Release notes:
+
+The %PATH% to foxconda was wrong for the clean command in eclipse for the primary project.
+The state of the interlock was correctly returned to the calling function, but not written back into the interlock state variable
+
+Changelog:
+
+- mcu-common repository: mcu-common/src/module/interlock.c: fixed the above mentioned bug
+- tools repository: tools/eclipse/foxbmsfoxbms-eclipse-project.zip: fixed the above mentioned bug
+
 
 Release 1.0.0
 -------------
@@ -98,10 +137,10 @@ Release 0.5.1
 Release notes:
 
 - Update from waf version 1.8.12 to version 1.9.13
-- Rewrite of the non-volatile random-access memory driver on the primary MCU. 
+- Rewrite of the non-volatile random-access memory driver on the primary MCU.
   It is now located in ``\foxBMS-primary\src\module\nvram``
-- The bootstrap script of foxBMS-setup repository now supports self-updating 
-  by calling ``python bootstrap.py --update``. This will allow easier version 
+- The bootstrap script of foxBMS-setup repository now supports self-updating
+  by calling ``python bootstrap.py --update``. This will allow easier version
   updates in the future.
 
 Changelog:

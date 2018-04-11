@@ -86,5 +86,5 @@ Team
    * - Pauline Thierauf 
      - Documentation
 
-For every kind of intormaation, do not hesitate to contact us: info@foxbms.org
+For every kind of information, do not hesitate to contact us: info@foxbms.org
 

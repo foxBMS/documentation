@@ -1,24 +1,22 @@
 .. include:: ../../../macros.rst
 
-
-
 ===
 LTC
 ===
 
 .. highlight:: C
 
-The driver communicates with the |LTC| monitoring chips in daisy-chain configuration. The chips are used to:
+The driver communicates with the |LTC| monitoring ICs in daisy-chain configuration. The ICs are used to:
 
  - measure the battery cell voltages
  - measure the voltages directly on the GPIOs
  - measure the voltage of up to 32 inputs via I2C-driven multiplexer
  - enable passive balancing of the connected battery cells
 
-The slave version is configuration in ``src\module\config\ltc_cfg.h`` by the define ``SLAVE_BOARD_VERSION``.
+The slave version is configured in ``src\module\config\ltc_cfg.h`` by the define ``SLAVE_BOARD_VERSION``.
 
- - Set SLAVE_BOARD_VERSION to ``1`` if version 1.xx of the foxBMS Slave is used.
- - Set SLAVE_BOARD_VERSION to ``2`` if version 2.xx of the foxBMS Slave is used. Version 2.xx is the default configuration.
+ - ``SLAVE_BOARD_VERSION`` must be set to ``1`` if version 1.xx of the foxBMS Slaves is used.
+ - ``SLAVE_BOARD_VERSION`` must be set to ``2`` if version 2.xx of the foxBMS Slaves is used. Version 2.xx is the default configuration.
 
 Module Files
 ~~~~~~~~~~~~
@@ -48,43 +46,28 @@ Detailed Description of the |mod_ltc|
 State Machine
 -------------
 
-The |mod_ltc| is organized in a state machine, which is mainly implemented with 4 functions:
-
- - ``LTC_Trigger()``: called every 1ms, contains the sequence of events in the state machine
- - ``LTC_Ctrl()``: makes state requests to the state machine, so that the |LTC| performs its tasks
- - ``LTC_SetStateRequest()``: used in ``LTC_Ctrl()`` to make the state requests
- - ``LTC_CheckStateRequest()``: called by ``LTC_SetStateRequest()`` to check the state requests. Returns the result of the check immediately.
-
-The operation of the state machine is described hereafter. First, the daisy chained |LTC| is initialized as shown in :numref:`fig. %s <ltc_figure1>`. 
+The |mod_ltc| is implemented as a state machine. The operation of the state machine is described in :numref:`fig. %s <ltc_figure1>`. 
 
 .. _ltc_figure1:
-.. figure:: ltc_statemachine1.png
+.. figure:: ltc.png
    :width: 100 %
 
-   |LTC| internal state machine (initialization)
+   |LTC| internal state machine
 
-After initialization, the state machine goes in the ``idle`` state, where the user can make five different requests:
+After initialization, the state machine goes in a measurement loop:
 
  - measure voltages
  - read measured voltages
- - read multiplexer inputs
- - read GPIO inputs
+ - select multiplexer input
+ - measure selected input
+ - read multiplexer input
+ - check state requests
  - balance cells
 
-The function ``LTC_SetStateRequest()`` is used to make these state requests to the |LTC| state machine. :numref:`Fig. %s <ltc_figure2>` and :numref:`%s <ltc_figure3>` detail how these possible state requests are handled.
+The function ``LTC_SetStateRequest()`` is used to make these state requests to the |LTC| state machine.
  
-.. _ltc_figure2:
-.. figure:: ltc_statemachine2.png
-   :width: 100 %
-   
-   |LTC| state machine (voltage measurement, voltage readout, all GPIOs measurement)
-
-.. _ltc_figure3:
-.. figure:: ltc_statemachine3.png
-   :width: 100 %
-
-   |LTC| state machine (measurement of a single GPIO)
-
+If more than one multiplexer input is configured, only one is measured per measurement cycle. The next one is measured during the next cycle. When the last configured multiplexer input is reached, the sequence starts over. 
+ 
 Results Retrieval and Balancing Orders
 --------------------------------------
 
@@ -93,15 +76,48 @@ The corresponding variables are:
 
 .. code-block:: C
 
-   DATA_BLOCK_CELLVOLTAGE_s           ltc_cellvoltage; //cell voltages
-   DATA_BLOCK_CELLTEMPERATURE_s       ltc_celltemperature; //cell temperature
-   DATA_BLOCK_MINMAX_s                ltc_minmax; //minimum and maximum values at battery pack
-                                                  //level for voltages and temperatures
-   DATA_BLOCK_BALANCING_FEEDBACK_s    ltc_balancing_feedback; //result from balancing feedback
-                                                              //(is each cell balanced or not)
-   DATA_BLOCK_BALANCING_CONTROL_s     ltc_balancing_control; //balancing orders read from database
+   DATA_BLOCK_CELLVOLTAGE_s         ltc_cellvoltage; //cell voltages
+   DATA_BLOCK_CELLTEMPERATURE_s     ltc_celltemperature; //cell temperature
+   DATA_BLOCK_MINMAX_s              ltc_minmax; //minimum and maximum values at battery pack
+                                                //level for voltages and temperatures
+   DATA_BLOCK_BALANCING_FEEDBACK_s  ltc_balancing_feedback; //result from balancing feedback
+                                                            //(is at least one cell being balanced)
+   DATA_BLOCK_BALANCING_CONTROL_s   ltc_balancing_control; //balancing orders read from database
+   DATA_BLOCK_SLAVE_CONTROL_s       ltc_slave_control;    //features on slave controlled by I2C
+ 
+Possible state requests
+-----------------------
 
+Folowing actions can be requested:
 
+ - write to IO port-expander
+ - read from IO port-expander
+ - read external temperature sensor on slave
+ - read global balancing feedback
+ - read from external slave EEPROM
+ - write to external slave EEPROM
+
+The corresponding requests are made with the following functions from the |mod_meas|.
+
+.. code-block:: C
+
+    uint8_t MEAS_Request_IO_Write(void);
+    uint8_t MEAS_Request_IO_Read(void);
+    uint8_t MEAS_Request_Temperature_Read(void);
+    uint8_t MEAS_Request_BalancingFeedback_Read(void);
+    uint8_t MEAS_Request_EEPROM_Read(void);
+    uint8_t MEAS_Request_EEPROM_Write(void);
+
+Before reading from the EEPROM, the address must be written to ``eeprom_read_address_to_use`` in the database block ``DATA_BLOCK_SLAVE_CONTROL_s``. The result is stored in ``eeprom_value_read`` in the database block ``DATA_BLOCK_SLAVE_CONTROL_s``. Once the read operation has been performed, the value ``0xFFFFFFFF`` is stored in ``eeprom_read_address_to_use``.
+
+Before writing to the EEPROM, the address must be written to ``eeprom_write_address_to_use`` in the block ``DATA_BLOCK_SLAVE_CONTROL_s``.  The data to be written must be stored in ``eeprom_value_write`` in the database block ``DATA_BLOCK_SLAVE_CONTROL_s`` before issuing the write request. Once the write operation has been performed, the value ``0xFFFFFFFF`` is stored in ``eeprom_write_address_to_use``.
+
+Measurement frequency
+---------------------
+
+When no requests are made, with 8 |LTC| monitoring ICs in the daisy-chain and 12 cell voltages, in normal measurement mode, a measurement cycle takes no more than 20ms. As a consequence, a measurement frequency of 50Hz can be achieved for the voltages.
+
+If requests are made, the measurement cycle can last longer (e.g., access to the EEPROM on the slaves needs more time). 
 
 Configuration of the |mod_ltc|
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -109,29 +125,40 @@ Configuration of the |mod_ltc|
 SPI Interface
 -------------
 
-In ``ltc_cfg.h``, the SPI devices used by the |LTC| is defined by the macro ``SPI_HANDLE_LTC``. The SPI handle must be chosen from the list ``SPI_HandleTypeDef spi_devices[]`` in ``spi_cfg.c``. The frequency of the used SPI must be adjusted with the configuration in ``spi_cfg.c``, so that the frequency is not higher than 1MHz. This is the maximum allowed frequency for the |LTC| chip. The function ``LTC_SetTransferTimes()`` sets the waiting times used for the |mod_ltc| automatically at startup. It uses ``LTC_GetSPIClock()`` to get the SPI clock frequency automatically.
+In ``ltc_cfg.h``, the SPI devices used by the |LTC| is defined by the macro ``SPI_HANDLE_LTC``. The SPI handle must be chosen from the list ``SPI_HandleTypeDef spi_devices[]`` in ``spi_cfg.c``. The frequency of the used SPI must be adjusted with the configuration in ``spi_cfg.c``, so that the frequency is not higher than 1MHz. This is the maximum allowed frequency for the |LTC| IC. The function ``LTC_SetTransferTimes()`` sets the waiting times used for the |mod_ltc| automatically at startup. It uses ``LTC_GetSPIClock()`` to get the SPI clock frequency automatically.
 
 
 Measurement Mode and Channel Selection
 --------------------------------------
 
-When a request is made with the function ``LTC_SetStateRequest()`` to measure cell voltages or multiplexer inputs, two arguments must be given. The first one is the measurement mode, which can be:
+Three measurement modes are available for the voltage measurements:
  
- - normal
- - filtered
- - fast
+ - Normal
+ - Filtered
+ - Fast
  
 These modes are defined in the |LTC| datasheet [ltc_datasheet]_. For cell voltage measurements, the macro ``VOLTAGE_MEASUREMENT_MODE`` is defined in ``ltc_cfg.h``. For multiplexers measurement, the macro ``GPIO_MEASUREMENT_MODE`` is defined in ``ltc_cfg.h``.
 
-The second argument is the number of channels: The following enums are defined in ``ltc.h``:
+Changing the number of cell voltages
+------------------------------------
+
+This number is changed in ``batterysystem_cfg.h`` with the define ``BS_NR_OF_BAT_CELLS_PER_MODULE``.
+    
+In addition, the variable
+
+.. code-block:: C
+
+    const uint8_t ltc_voltage_input_used[BS_MAX_SUPPORTED_CELLS]
+
+must be adapted, too, in ``ltc_cfg.c``.
+
+It has the size of ``BS_MAX_SUPPORTED_CELLS``. If a cell voltage is connected to the LTC IC input, ``1`` must be written in the table. Otherwise, ``0`` must be written. More details can be found in the software FAQ: :ref:`faq_voltage_input_configuration`.
  
- - ``LTC_ADCMEAS_ALLCHANNEL`` to measure all cell voltages/to measure all 5 GPIO inputs
- - ``LTC_ADCMEAS_SINGLECHANNEL`` to measure 2 cell voltages/to measure 1 GPIO input
 
 Multiplexer Sequence
 --------------------
 
-In case of a single GPIO measurement, the multiplexer sequence to be read is defined in ``ltc_cfg.c`` with the variable ``LTC_MUX_CH_CFG_t ltc_mux_seq_main_ch1[]``. It is a list of elements of the following form:
+In case of single GPIO measurements, the multiplexer sequence to be read is defined in ``ltc_cfg.c`` with the variable ``LTC_MUX_CH_CFG_t ltc_mux_seq_main_ch1[]``. It is a list of elements of the following form:
 
 .. code-block:: C
 
@@ -140,12 +167,12 @@ In case of a single GPIO measurement, the multiplexer sequence to be read is def
        .muxCh    = 3,
    }
     
-where the multiplexer to select (muxID, can be 0, 1, 2 or 3) and the channel to select (muxCh, from 0 to 7) are defined. Channel 0xFF means that the multiplexer is turned off. This is used to avoid two or more multiplexers to have their outputs in a low-impedance state on the same time.
+where the multiplexer to select (muxID, can be 0, 1, 2 or 3) and the channel to select (muxCh, from 0 to 7) are defined. Channel 0xFF means that the multiplexer is turned off. This is used to avoid two or more multiplexers to have their outputs in a low-impedance state at the same time.
 
 Temperature Sensor Assignment
 -----------------------------
 
-For temperature sensors, the variable is used to give the correspondence between the channel measured and the index used:
+For temperature sensors, the following variable is used to give the correspondence between the channel measured and the index used:
 
 .. code-block:: C
 
@@ -166,19 +193,9 @@ In the above example, channel 0 of the multiplexer corresponds to temperature se
 
    sensor_idx = ltc_muxsensortemperaturmain_cfg[muxseqptr->muxCh];
 
-Usage
-~~~~~
-
-The |mod_ltc| cycle (cell voltage measurement, GPIO measurement, balancing control) is implemented in the function ``LTC_Ctrl()``. The default configuration is a measurement with multiplexers. Once the |LTC| daisy chain has been initialized, the cycle is as follow:
-
- - measure cell voltages
- - measure ``NUMBER_OF_MUX_MEASUREMENTS_PER_CYCLE`` multiplexer inputs
- - measure cell voltage
- - repeat till all multiplexer inputs have been read
- - balance cells according to the data in database
-
+Further information on the configuration of the temperature sensors can be found in the software FAQ: :ref:`faq_temperature_sensor_configuration`.
 
 References
 ~~~~~~~~~~
 
-.. [ltc_datasheet] LTC6804 Datasheet http://cds.linear.com/docs/en/datasheet/680412fb.pdf
+.. [ltc_datasheet] LTC6804 Datasheet http://www.linear.com/product/LTC6804-1

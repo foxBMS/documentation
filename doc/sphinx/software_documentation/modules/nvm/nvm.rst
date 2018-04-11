@@ -47,7 +47,7 @@ Data Structure
 
 The data storage of the EEPROM is organized in coherent data entities called channels. Each channel has its own storage area reserved in the EEPROM. EEPROM channels can be used as a non-volatile backup for corresponding BKPSRAM channels. Furthermore, every channel has a checksum, an ID, and optionally a software write protection and a pointer to the location of the corresponding channel in the SRAM or BKPSRAM. Additionally, every channel has a dirty flag, which is set to indicate a modification of data to initiate a backup process to the EEPROM. EEPROM channels can be configured to be updated automatically during startup, if data is not up-to-date or in case it is corrupted.
 
-Example: EEPROM-channels A, B and C have coherent BKPSRAM channels. D has a coherent SRAM channel. E does not have a coherent channel: the data are written directly into this channel.
+Example: EEPROM-channels A, B and C have coherent BKPSRAM channels. E has a coherent SRAM channel. D does not have a coherent channel: the data are written directly into this channel.
 
 .. _nvm_datastructure:
 .. figure:: ./nvm_datastructure.png

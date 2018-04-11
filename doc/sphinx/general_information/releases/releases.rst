@@ -18,7 +18,7 @@ The first line is the most recent one, the last one the oldest one.
 +===============+==========+===========+===========+==============+=================+=============+=================+============+
 | 1.0.2         | 1.0.0 ;  | 1.0.0 ;   | 1.0.0 ;   | 1.0.2        | 1.0.1           |   1.0.1 ;   | 1.0.2           | 1.0.0      |
 |               | 1.0.1    | 1.0.1     | 1.0.1 ;   |              |                 |   2.0.3 ;   |                 |            |
-|               |          |           | 1.0.2     |              |                 |   2.1.0     |                 |            |
+|               | 1.0.2    |           | 1.0.2     |              |                 |   2.1.0     |                 |            |
 +---------------+----------+-----------+-----------+--------------+-----------------+-------------+-----------------+------------+
 | 0.5.2         | 0.5.2    | 0.5.2     |           | 1.0.2        | 1.0.1           |   1.0.1 ;   | 1.0.2           | 0.5.0      |
 |               |          |           |           |              |                 |   2.0.3 ;   |                 |            |
@@ -40,6 +40,44 @@ The first line is the most recent one, the last one the oldest one.
 +---------------+----------+-----------+-----------+--------------+-----------------+-------------+-----------------+------------+
 
 The following section summarizes the release notes for the different versions of the documentation.
+
+Release 1.0.2 mcu-primary
+-------------------------
+
+Release notes:
+
+- One error in the ISOGUARD module and one error in the EEPROM module have been fixed.
+
+
+Changelog:
+
+- fixed a bug in ISOGUARD module that caused a wrong insulation resistance to be transmitted via CAN if the measured insulation resistance was greater than 255kOhm
+- fixed a bug in EEPROM module that overwrote EEPROM data with default values if EEPROM header was corrupt
+
+
+Release 1.0.1 mcu-primary
+-------------------------
+
+Changelog:
+
+- fixed problem in cansignal when less than 12 cells are used.
+
+Release 1.0.1 mcu-secondary
+---------------------------
+
+Changelog:
+
+- fixed problem in cansignal when less than 12 cells are used.
+
+Release 1.0.1 tools
+-------------------
+
+Version 1.0.1 of tools must be used with every repository starting from version 1.0.x
+
+Changelog:
+
+- fixed wrong path to python on the clean command of the primary project in eclipse
+
 
 Release 1.0.2 mcu-common
 ------------------------

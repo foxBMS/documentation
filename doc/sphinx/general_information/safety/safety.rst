@@ -110,7 +110,7 @@ The interfaces of the |master| are:
      - Galvanically isolated Normally Open Contact interface for any purpose left to the user
    * - Analog Inputs
      - Analog inputs for any purpose left to the user
-   * - SD Card
+   * - Memory Card
      - Data storage for the primary microcontroller
 
 

@@ -140,7 +140,7 @@ EEPROM
    
    EEPROM, exemplarily shown for the |MCU0|
 
-The |BMS-Master| provides an 2MB EEPROM for data storage for the |primary| and |secondary| MCU (see :numref:`Fig. %s <eeprom>`). It uses an SPI interface, which is shared with the SD-Card, which is also connected to |MCU0|.
+The |BMS-Master| provides an 2MB EEPROM for data storage for the |primary| and |secondary| MCU (see :numref:`Fig. %s <eeprom>`). It uses an SPI interface, which is shared with the memory card, which is also connected to |MCU0|.
 
 
 Isolated RS485 Interface
@@ -192,15 +192,15 @@ Isolated GPIO
 
 The |BMS-Extension| provides 4 isolated inputs and 4 isolated outputs for general purpose (shown in :numref:`Fig. %s <isolated_gpio>` ). Two ADUM3402 (IC1902 and IC1903) are used for isolation. Their external side of is supplied by ``SUPPLX_EXT0`` via a 78L05F linear voltage regulator (IC1901). The inputs are equipped with a 10kOhm pull down resistor. All isolated GPIOs are available on the connector X1901 pins 1 to 8. Pins 9 and 10 of X1901 are connected to ``GND_EXT0``.
    
-SD Card
+Memory Card
 -------
 
-.. _sd_card:
-.. figure:: ./sd_card.png
+.. _memory_card:
+.. figure:: ./memory_card.png
    :width: 100 %
    
-   SD Card
+   Memory card
 
-On the |BMS-Extension| also a SD card slot can be found. It is directly connected to the Data Storage SPI of the |primary| microcontroller. :numref:`Fig. %s <sd_card>` shows the schematic. Via the signal ``SDCARD_SUPPLY_CONTROL`` (|primary| microcontroller) the supply voltage of the SD card can be switched on and off. 
+On the |BMS-Extension| also a memory card slot can be found. It is directly connected to the Data Storage SPI of the |primary| microcontroller. :numref:`Fig. %s <memory_card>` shows the schematic. Via the signal ``CARD_SUPPLY_CONTROL`` (|primary| microcontroller) the supply voltage of the memory card can be switched on and off. 
 
 

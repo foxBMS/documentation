@@ -7,8 +7,6 @@
 .. |timestamp| date:: %Y-%m-%d %H:%M:%S
 .. |foxbms| replace:: foxBMS
 .. |foxconda| replace:: foxConda
-.. |frontdesk| replace:: Front Desk
-.. |foxygen| replace:: Foxygen
 .. |doxygen| replace:: Doxygen
 
 .. -----------------------------------------------

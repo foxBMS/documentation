@@ -33,6 +33,14 @@ Schematic and Board Layout
 
 More information about the board schematic and layout files can be found in section :ref:`hardware_design_resources`.
 
+
+---------------------
+Mechanical Dimensions
+---------------------
+
+The size of the foxBMS Slave PCB is 160x100mm. A mechanical drawing of the PCB can be found in section :ref:`hardware_design_resources`.
+
+
 =========
 Functions
 =========

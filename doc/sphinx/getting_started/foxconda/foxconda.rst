@@ -60,7 +60,7 @@ An installation directory must be selected as shown in :numref:`fig. %s <condain
 .. figure:: ./condainstaller3.png
    :width: 100 %
 
-   Installation path for the Front Desk environment
+   Installation path for the |foxconda| environment
 
 A default location is proposed. It can be changed, but it is advised to keep it. Clicking on ``Next >`` starts the installation as shown in :numref:`fig. %s <condainstaller4>`. This step can take several minutes.
 

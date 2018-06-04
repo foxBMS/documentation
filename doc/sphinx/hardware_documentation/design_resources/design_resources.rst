@@ -41,5 +41,5 @@ The PCB layout, schematic and BOM files for the |BMS-Interface| are available on
 |BMS-Slave|
 -----------
 
-The PCB layout, schematic and BOM files for the |BMS-Slave| are available on GitHub: `BMS-Slave <https://github.com/foxBMS/hw-slave-12-ltc6811-1>`_.
+The PCB layout, schematic, mechanical drawing and BOM files for the |BMS-Slave| are available on GitHub: `BMS-Slave <https://github.com/foxBMS/hw-slave-12-ltc6811-1>`_.
 

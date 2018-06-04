@@ -12,39 +12,39 @@ Team
 |foxbms| Management Team Fraunhofer IISB
 ----------------------------------------
 
-.. list-table:: 
+.. list-table::
    :header-rows: 1
    :widths: 15 100
 
-   * - Firstname Lastname 
+   * - Firstname Lastname
      - Main Role
-   * - Vincent Lorentz 
+   * - Vincent Lorentz
      - Project Initiator and Technical Marketing
-   * - Stéphane Koffel 
+   * - Stéphane Koffel
      - Project Management and Coordination
-   * - Martin März 
+   * - Martin März
      - Technical Consulting
-   * - Jürgen Lorenz 
+   * - Jürgen Lorenz
      - Licenses and Legal Consulting
-   * - Lothar Frey 
+   * - Lothar Frey
      - Technical Marketing and Legal Consulting
 
-	 
-	 
+
+
 |foxbms| Development Team Fraunhofer IISB
 -----------------------------------------
 
-.. list-table:: 
+.. list-table::
    :header-rows: 1
    :widths: 15 100
 
-   * - Firstname Lastname 
+   * - Firstname Lastname
      - Main Role
-   * - Martin Wenger 
+   * - Martin Wenger
      - Hardware Team Coordination, Hardware Development
-   * - Stéphane Koffel 
+   * - Stéphane Koffel
      - Software Team Coordination, Algorithm Development
-   * - Müsfik Akdere 
+   * - Müsfik Akdere
      - Technical Lead Embedded Software
    * - Tim Fühner
      - Technical Lead Software, Algorithm Development
@@ -52,7 +52,7 @@ Team
      - Software Development
    * - Stefan Waldhör
      - Software Development
-   * - Johannes Wachtler 
+   * - Johannes Wachtler
      - Software Development
    * - Christian Freund
      - Software Configuration Management
@@ -71,19 +71,19 @@ Team
 |foxbms| Student Team Fraunhofer IISB
 -------------------------------------
 
-.. list-table:: 
+.. list-table::
    :header-rows: 1
    :widths: 15 100
 
-   * - Firstname Lastname 
+   * - Firstname Lastname
      - Main Role
-   * - Robin Heim 
+   * - Robin Heim
      - Hardware and Software Development
-   * - Christian Thomas 
+   * - Christian Thomas
      - Software Development
    * - Lucas Grunenberg
      - Software Development
-   * - Pauline Thierauf 
+   * - Pauline Thierauf
      - Documentation
 
 For every kind of information, do not hesitate to contact us: info@foxbms.org

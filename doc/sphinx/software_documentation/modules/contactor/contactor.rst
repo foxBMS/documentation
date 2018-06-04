@@ -34,6 +34,34 @@ The ``PRECHARGE`` state performs the transition between ``STANDBY`` and ``NORMAL
 The transition between the states is made through state request. These are made by the |mod_bms|. From ``STANDBY``, the state machine can transition to ``NORMAL`` or ``CHARGE``, or the opposite. No transition is possible directly between ``NORMAL`` and ``CHARGE``.
 
 
+Switching Counter
+~~~~~~~~~~~~~~~~~
+
+Contactors have a specified number of switching cycles. The number of switching
+cycles varies depending if the contactor has been opened under load or not.
+The values have to be taken from the manufacturers manual.
+
+|foxbms| uses the following strategy to allow it the user to store the number of
+switching cycles each contactor has done and track their usage.
+
+The counters for **closing**, **opening** and **opening under load** are stored
+in the variable ``bkpsram_contactors_count``. The counters are backup into the
+the second non-volatile memory (EEPROM), when the |master| is power cycled. This
+ensures, that even if the RTC battery is at some point completely discharged, 
+the second last counter number of all contactors is still safely stored and
+available for diagnostic purposes.
+
+
+..  warning::
+    **Limitations of the contactor swichting counter**
+    
+    If the RTC battery is removed or empty AND the mcu is power cycled, all
+    countings since the last saving (therefore a valid power cycle with charged
+    RTC battery) on the EEPROM are lost.
+
+For details of the counter implementation see the modules ``diag`` and the
+``bkpsram``.
+
 Module Files
 ~~~~~~~~~~~~
 

@@ -912,15 +912,15 @@ To add one temperature sensor, the first step is to change:
 
 .. code-block:: C
 
-    #define NR_OF_TEMP_SENSORS_PER_MODULE           6
+    #define BS_NR_OF_TEMP_SENSORS_PER_MODULE           6
 
 to:
 
 .. code-block:: C
 
-    #define NR_OF_TEMP_SENSORS_PER_MODULE           7
+    #define BS_NR_OF_TEMP_SENSORS_PER_MODULE           7
 
-in ``global.h``.
+in ``batterysystem_cfg.h``.
 
 However, this obvious step is not sufficient.
 

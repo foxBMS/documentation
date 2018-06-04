@@ -56,8 +56,8 @@ The Battery Management System (BMS) is the main control unit of the whole batter
 Battery Junction Box Part List
 ------------------------------
 
-In-stock Products
-~~~~~~~~~~~~~~~~~
+Commercial Off-The-Shelf (COTS) Parts
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 :numref:`Table %s <instock_products>` shows the components used in the BJB. All components were selected to fit the system specifications listed in :ref:`system_spec`. If another battery configuration than specified here is used, the voltage and current ratings of these components have to be checked and adapted.
 

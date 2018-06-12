@@ -193,7 +193,7 @@ Isolated GPIO
 The |BMS-Extension| provides 4 isolated inputs and 4 isolated outputs for general purpose (shown in :numref:`Fig. %s <isolated_gpio>` ). Two ADUM3402 (IC1902 and IC1903) are used for isolation. Their external side of is supplied by ``SUPPLX_EXT0`` via a 78L05F linear voltage regulator (IC1901). The inputs are equipped with a 10kOhm pull down resistor. All isolated GPIOs are available on the connector X1901 pins 1 to 8. Pins 9 and 10 of X1901 are connected to ``GND_EXT0``.
    
 Memory Card
--------
+-----------
 
 .. _memory_card:
 .. figure:: ./memory_card.png

@@ -1,5 +1,12 @@
 # foxBMS Change Log
 
+## Release 1.0.2
+
+- updated documenation for the build process
+- updated FAQ section
+- updated copyright
+- updated README.md
+
 ## Release 1.0.1
 
 - updated LTC and CAN-module documentation
